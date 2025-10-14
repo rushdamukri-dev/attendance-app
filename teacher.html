@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Generate Attendance QR</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+</head>
+<body>
+<h2>Teacher: Generate Attendance QR</h2>
+<button id="generate">New QR for This Class</button>
+<div id="qrcode" style="margin-top:20px;"></div>
+
+<script>
+document.getElementById('generate').onclick = () => {
+  const token = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  const payload = { session: token, timestamp: Date.now() };
+  const encoded = encodeURIComponent(JSON.stringify(payload));
+  const url = `https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=${encoded}`;
+  document.getElementById('qrcode').innerHTML = "";
+  QRCode.toCanvas(url, { width: 220 }, (_, c) => document.getElementById('qrcode').appendChild(c));
+};
+</script>
+</body>
+</html>
