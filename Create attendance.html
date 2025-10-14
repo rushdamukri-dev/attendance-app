@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Attendance Check-in</title>
+</head>
+<body>
+<h2>Student Check-in</h2>
+<input id="name" placeholder="Your Name"><br>
+<input id="id" placeholder="Your ID"><br>
+<button id="submit">Submit Attendance</button>
+<p id="status">Waiting...</p>
+<pre id="debug"></pre>
+
+<script>
+const BACKEND = 'https://script.google.com/macros/s/AKfycby1yDtEcSIweyEBCpAeFBAfkjmy4JCX0ExYibgF1LW_qXBwE0e5KS2rVEeHXLxrLOnF/exec';
+const TARGET_LAT = 18.99967;
+const TARGET_LNG = 73.10495;
+const RADIUS_M   = 30;
+
+const params = new URLSearchParams(location.search);
+const tokenData = JSON.parse(params.get('token') || '{}');
+
+function distanceMeters(lat1, lon1, lat2, lon2){
+  const R=6371000,toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1),dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+document.getElementById('submit').onclick = () => {
+  if(!tokenData.session){ alert("⚠️ Scan the teacher’s QR first!"); return; }
+
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const {latitude,longitude} = pos.coords;
+    const d = distanceMeters(latitude,longitude,TARGET_LAT,TARGET_LNG);
+    document.getElementById('debug').textContent=`Distance: ${Math.round(d)} m`;
+
+    if(d > RADIUS_M){ alert("❌ Outside classroom area."); return; }
+
+    const payload = {
+      name: document.getElementById('name').value.trim(),
+      id: document.getElementById('id').value.trim(),
+      lat: latitude, lng: longitude,
+      sessionToken: tokenData.session,
+      timestamp: tokenData.timestamp
+    };
+
+    const res = await fetch(BACKEND,{method:'POST',body:JSON.stringify(payload)});
+    const txt = await res.text();
+    document.getElementById('status').textContent = txt;
+
+    if(txt==='SUCCESS') alert('✅ Attendance recorded!');
+    else if(txt==='ALREADY_MARKED') alert('⚠️ Already marked present.');
+    else if(txt==='EXPIRED') alert('⏰ QR expired, ask teacher to refresh.');
+  },
+  err=>alert('Location error: '+err.message),
+  {enableHighAccuracy:true,timeout:15000});
+};
+</script>
+</body>
+</html>
