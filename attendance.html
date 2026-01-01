@@ -3,6 +3,35 @@ const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
 
 if (!token) {
+  alert("Attendance link is invalid");
+  window.location.href = "teacher.html";
+}
+
+let payload;
+try {
+  payload = JSON.parse(decodeURIComponent(token));
+} catch {
+  alert("Invalid QR data");
+  window.location.href = "teacher.html";
+}
+
+const storedSession = localStorage.getItem("sessionId");
+const expiry = localStorage.getItem("expiry");
+
+if (
+  payload.session !== storedSession ||
+  Date.now() > expiry
+) {
+  alert("Attendance session expired");
+  window.location.href = "teacher.html";
+}
+</script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+if (!token) {
   alert("No session token found");
   window.location.href = "teacher.html";
 }
@@ -19,5 +48,6 @@ if (
   window.location.href = "teacher.html";
 }
 </script>
+
 
 
