@@ -1,33 +1,10 @@
-<script>
-document.getElementById('generate').onclick = () => {
-
-  // 1️⃣ Create unique session token
-  const sessionId = Math.random().toString(36).substring(2, 8);
-
-  // 2️⃣ Expiry: 10 minutes from now
-  const expiry = Date.now() + (10 * 60 * 1000);
-
-  // 3️⃣ Save session data (important!)
-  localStorage.setItem("sessionId", sessionId);
-  localStorage.setItem("expiry", expiry);
-
-  // 4️⃣ Clear old attendance data
-  localStorage.removeItem("marked");
-  localStorage.removeItem("records");
-
-  // 5️⃣ Create payload for QR
-  const payload = {
-    session: sessionId,
-    exp: expiry
-  };
-
-  const encoded = encodeURIComponent(JSON.stringify(payload));
-  const url = `https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=${encoded}`;
-
-  // 6️⃣ Generate QR
-  document.getElementById('qrcode').innerHTML = "";
-  QRCode.toCanvas(url, { width: 220 }, (_, canvas) => {
-    document.getElementById('qrcode').appendChild(canvas);
-  });
-};
-</script>
+<!doctype html>
+<html>
+<head>
+  <title>Test Page</title>
+</head>
+<body>
+  <h1>Teacher Page Loaded</h1>
+  <p>If you see this, GitHub Pages is working.</p>
+</body>
+</html>
