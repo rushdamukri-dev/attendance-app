@@ -1,53 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mark Attendance</title>
+</head>
+<body>
+
+<h2>Student Attendance Page</h2>
+<p id="msg">Validating session...</p>
+
+<!-- SIMPLE UI FOR NOW -->
+<input id="roll" placeholder="Enter Roll Number" />
+<button onclick="markAttendance()">Mark Attendance</button>
+
 <script>
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
+(function () {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
 
-if (!token) {
-  alert("Attendance link is invalid");
-  window.location.href = "teacher.html";
-}
+    if (!token) {
+      alert("Attendance link is invalid");
+      window.location.href = "teacher.html";
+      return;
+    }
 
-let payload;
-try {
-  payload = JSON.parse(decodeURIComponent(token));
-} catch {
-  alert("Invalid QR data");
-  window.location.href = "teacher.html";
-}
+    const payload = JSON.parse(decodeURIComponent(token));
 
-const storedSession = localStorage.getItem("sessionId");
-const expiry = localStorage.getItem("expiry");
+    const storedSession = localStorage.getItem("sessionId");
+    const expiry = Number(localStorage.getItem("expiry"));
 
-if (
-  payload.session !== storedSession ||
-  Date.now() > expiry
-) {
-  alert("Attendance session expired");
-  window.location.href = "teacher.html";
+    if (!storedSession || !expiry) {
+      alert("No active attendance session");
+      window.location.href = "teacher.html";
+      return;
+    }
+
+    if (payload.session !== storedSession) {
+      alert("Invalid attendance session");
+      window.location.href = "teacher.html";
+      return;
+    }
+
+    if (Date.now() > expiry) {
+      alert("Attendance session expired");
+      window.location.href = "teacher.html";
+      return;
+    }
+
+    document.getElementById("msg").innerText =
+      "Session verified ✅ You may mark attendance.";
+
+    console.log("Session validated");
+
+  } catch (e) {
+    alert("Invalid QR code");
+    window.location.href = "teacher.html";
+  }
+})();
+
+function markAttendance() {
+  const roll = document.getElementById("roll").value;
+  if (!roll) {
+    alert("Enter roll number");
+    return;
+  }
+  alert("Attendance marked for Roll: " + roll);
 }
 </script>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
-
-if (!token) {
-  alert("No session token found");
-  window.location.href = "teacher.html";
-}
-
-const payload = JSON.parse(decodeURIComponent(token));
-const storedSession = localStorage.getItem("sessionId");
-const expiry = localStorage.getItem("expiry");
-
-if (
-  payload.session !== storedSession ||
-  Date.now() > expiry
-) {
-  alert("Session expired or invalid");
-  window.location.href = "teacher.html";
-}
-</script>
-
-
+</body>
+</html>
 
