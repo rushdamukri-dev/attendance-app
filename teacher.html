@@ -13,30 +13,25 @@
 
 <script>
 document.getElementById("generate").addEventListener("click", () => {
-  try {
-    const sessionId = Math.random().toString(36).substring(2, 8);
-    const expiry = Date.now() + (10 * 60 * 1000); // 10 min
+  const sessionId = Math.random().toString(36).substring(2, 8);
+  const expiry = Date.now() + (10 * 60 * 1000); // 10 minutes
 
-    localStorage.setItem("sessionId", sessionId);
-    localStorage.setItem("expiry", expiry);
-    localStorage.removeItem("marked");
-    localStorage.removeItem("records");
+  localStorage.setItem("sessionId", sessionId);
+  localStorage.setItem("expiry", expiry);
+  localStorage.removeItem("marked");
+  localStorage.removeItem("records");
 
-    const payload = { session: sessionId, exp: expiry };
-    const encoded = encodeURIComponent(JSON.stringify(payload));
-    const url =
-      "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
-      encoded;
+  const payload = { session: sessionId, exp: expiry };
+  const encoded = encodeURIComponent(JSON.stringify(payload));
 
-    document.getElementById("qrcode").innerHTML = "";
-    QRCode.toCanvas(url, { width: 220 }, (err, canvas) => {
-      if (err) throw err;
-      document.getElementById("qrcode").appendChild(canvas);
-    });
-  } catch (e) {
-    alert("Error generating QR");
-    console.error(e);
-  }
+  const url =
+    "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
+    encoded;
+
+  document.getElementById("qrcode").innerHTML = "";
+  QRCode.toCanvas(url, { width: 220 }, (_, canvas) => {
+    document.getElementById("qrcode").appendChild(canvas);
+  });
 });
 </script>
 
