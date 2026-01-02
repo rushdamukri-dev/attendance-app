@@ -1,10 +1,44 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>Test Page</title>
+<meta charset="utf-8">
+<title>Generate Attendance QR</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
-  <h1>Teacher Page Loaded</h1>
-  <p>If you see this, GitHub Pages is working.</p>
+
+<h2>Teacher: Generate Attendance QR</h2>
+<button id="generate">New QR for This Class</button>
+<div id="qrcode" style="margin-top:20px;"></div>
+
+<script>
+document.getElementById("generate").addEventListener("click", () => {
+  try {
+    const sessionId = Math.random().toString(36).substring(2, 8);
+    const expiry = Date.now() + (10 * 60 * 1000); // 10 min
+
+    localStorage.setItem("sessionId", sessionId);
+    localStorage.setItem("expiry", expiry);
+    localStorage.removeItem("marked");
+    localStorage.removeItem("records");
+
+    const payload = { session: sessionId, exp: expiry };
+    const encoded = encodeURIComponent(JSON.stringify(payload));
+    const url =
+      "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
+      encoded;
+
+    document.getElementById("qrcode").innerHTML = "";
+    QRCode.toCanvas(url, { width: 220 }, (err, canvas) => {
+      if (err) throw err;
+      document.getElementById("qrcode").appendChild(canvas);
+    });
+  } catch (e) {
+    alert("Error generating QR");
+    console.error(e);
+  }
+});
+</script>
+
 </body>
 </html>
