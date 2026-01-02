@@ -1,74 +1,71 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Mark Attendance</title>
+<meta charset="utf-8">
+<title>Mark Attendance</title>
 </head>
 <body>
 
-<h2>Student Attendance Page</h2>
-<p id="msg">Validating session...</p>
+<h2>Student Attendance</h2>
 
-<!-- SIMPLE UI FOR NOW -->
-<input id="roll" placeholder="Enter Roll Number" />
-<button onclick="markAttendance()">Mark Attendance</button>
+<form id="attendanceForm">
+  <label>
+    Name:
+    <input type="text" id="name" required>
+  </label><br><br>
+
+  <label>
+    Roll Number:
+    <input type="text" id="roll" required>
+  </label><br><br>
+
+  <button type="submit">Mark Attendance</button>
+</form>
 
 <script>
-(function () {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+/* =========================
+   1. QR TOKEN VALIDATION
+========================= */
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
 
-    if (!token) {
-      alert("Attendance link is invalid");
-      window.location.href = "teacher.html";
-      return;
-    }
-
-    const payload = JSON.parse(decodeURIComponent(token));
-
-    const storedSession = localStorage.getItem("sessionId");
-    const expiry = Number(localStorage.getItem("expiry"));
-
-    if (!storedSession || !expiry) {
-      alert("No active attendance session");
-      window.location.href = "teacher.html";
-      return;
-    }
-
-    if (payload.session !== storedSession) {
-      alert("Invalid attendance session");
-      window.location.href = "teacher.html";
-      return;
-    }
-
-    if (Date.now() > expiry) {
-      alert("Attendance session expired");
-      window.location.href = "teacher.html";
-      return;
-    }
-
-    document.getElementById("msg").innerText =
-      "Session verified ✅ You may mark attendance.";
-
-    console.log("Session validated");
-
-  } catch (e) {
-    alert("Invalid QR code");
-    window.location.href = "teacher.html";
-  }
-})();
-
-function markAttendance() {
-  const roll = document.getElementById("roll").value;
-  if (!roll) {
-    alert("Enter roll number");
-    return;
-  }
-  alert("Attendance marked for Roll: " + roll);
+if (!token) {
+  alert("Invalid access. Please scan QR.");
+  window.location.href = "teacher.html";
 }
-</script>
 
-</body>
-</html>
+let payload;
+try {
+  payload = JSON.parse(decodeURIComponent(token));
+} catch {
+  alert("Invalid QR data");
+  window.location.href = "teacher.html";
+}
 
+const storedSession = localStorage.getItem("sessionId");
+const expiry = localStorage.getItem("expiry");
+
+if (
+  payload.session !== storedSession ||
+  Date.now() > expiry
+) {
+  alert("Attendance session expired");
+  window.location.href = "teacher.html";
+}
+
+/* =========================
+   2. DUPLICATE PREVENTION
+========================= */
+let records = JSON.parse(localStorage.getItem("records")) || [];
+let marked = JSON.parse(localStorage.getItem("marked")) || [];
+
+/* =========================
+   3. FORM SUBMISSION
+========================= */
+document.getElementById("attendanceForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const roll = document.getElementById("roll").value.trim().toUpperCase();
+
+  i
