@@ -31,7 +31,8 @@ const token = params.get("token");
 
 if (!token) {
   alert("Invalid access. Please scan QR.");
-  window.location.href = "teacher.html";
+ window.location.href = "./teacher.html";
+
 }
 
 let payload;
@@ -39,7 +40,8 @@ try {
   payload = JSON.parse(decodeURIComponent(token));
 } catch {
   alert("Invalid QR data");
-  window.location.href = "teacher.html";
+  window.location.href = "./teacher.html";
+
 }
 
 const storedSession = localStorage.getItem("sessionId");
@@ -50,7 +52,8 @@ if (
   Date.now() > expiry
 ) {
   alert("Attendance session expired");
-  window.location.href = "teacher.html";
+ window.location.href = "./teacher.html";
+
 }
 
 /* =========================
@@ -69,3 +72,4 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   const roll = document.getElementById("roll").value.trim().toUpperCase();
 
   i
+
