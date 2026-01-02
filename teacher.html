@@ -24,9 +24,10 @@ document.getElementById("generate").addEventListener("click", () => {
   const payload = { session: sessionId, exp: expiry };
   const encoded = encodeURIComponent(JSON.stringify(payload));
 
-  const url =
-    "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
-    encoded;
+ const url =
+  "https://rushdamukri-dev.github.io/teacher.html/attendance.html?token=" +
+  encoded;
+
 
   document.getElementById("qrcode").innerHTML = "";
   QRCode.toCanvas(url, { width: 220 }, (_, canvas) => {
