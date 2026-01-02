@@ -11,9 +11,6 @@
 <button onclick="logout()">End Session</button>
 
 <script>
-/* =========================
-   1. TEACHER ACCESS CHECK
-========================= */
 const sessionId = localStorage.getItem("sessionId");
 const expiry = localStorage.getItem("expiry");
 
@@ -22,9 +19,6 @@ if (!sessionId || Date.now() > expiry) {
   window.location.href = "./teacher.html";
 }
 
-/* =========================
-   2. LOAD RECORDS
-========================= */
 const records = JSON.parse(localStorage.getItem("records")) || [];
 const list = document.getElementById("list");
 
@@ -38,9 +32,6 @@ if (records.length === 0) {
   });
 }
 
-/* =========================
-   3. END SESSION
-========================= */
 function logout() {
   localStorage.clear();
   alert("Session ended");
