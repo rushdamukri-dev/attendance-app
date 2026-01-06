@@ -11,11 +11,10 @@
 <button onclick="logout()">End Session</button>
 
 <script>
-const sessionId = localStorage.getItem("sessionId");
-const expiry = localStorage.getItem("expiry");
+  const sessionId = localStorage.getItem("sessionId");
 
-if (!sessionId || Date.now() > expiry) {
-  alert("Access denied. Teacher session expired.");
+if (!sessionId) {
+  alert("Access denied. Teacher session not started.");
   window.location.href = "./teacher.html";
 }
 
