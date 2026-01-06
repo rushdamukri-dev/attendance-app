@@ -12,29 +12,28 @@
 <div id="qrcode" style="margin-top:20px;"></div>
 
 <script>
-document.getElementById("generate").addEventListener("click", () => {
-  const sessionId = Math.random().toString(36).substring(2, 8);
-  const expiry = Date.now() + (10 * 60 * 1000); // 10 minutes
-
-  localStorage.setItem("sessionId", sessionId);
-  localStorage.setItem("expiry", expiry);
-  localStorage.removeItem("marked");
-  localStorage.removeItem("records");
-
-  const payload = { session: sessionId, exp: expiry };
+document.getElementById("generate").onclick = () => {
+  const token = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const payload = { session: token, timestamp: Date.now() };
   const encoded = encodeURIComponent(JSON.stringify(payload));
+  const url =
+    "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
+    encoded;
 
- const url =
-  "https://rushdamukri-dev.github.io/teacher.html/attendance.html?token=" +
-  encoded;
+  const box = document.getElementById("qrcode");
+  box.innerHTML = "";
 
+  QRCode.toCanvas(url, { width: 220 }, (_, canvas) => {
+    box.appendChild(canvas);
 
-  document.getElementById("qrcode").innerHTML = "";
- const box = document.getElementById("qrcode");
-box.innerHTML = "";
+    const p = document.createElement("p");
+    p.style.wordBreak = "break-all";
+    p.style.fontSize = "12px";
+    p.innerText = url;
 
-QRCode.toCanvas(url, { width: 220 }, (_, canvas) => {
-  box.appendChild(canvas);
+    box.appendChild(p);
+  });
+};
 
   const p = document.createElement("p");
   p.style.wordBreak = "break-all";
