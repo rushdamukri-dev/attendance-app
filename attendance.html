@@ -15,8 +15,7 @@
 </form>
 
 <script>
-<script>
-/* ===============================
+/* ================================
    1. QR TOKEN VALIDATION
 ================================ */
 const params = new URLSearchParams(window.location.search);
@@ -27,44 +26,44 @@ if (!token) {
   window.location.href = "./teacher.html";
 }
 
-/* ===============================
+/* ================================
    2. DECODE QR PAYLOAD
 ================================ */
 let payload;
 try {
   payload = JSON.parse(decodeURIComponent(token));
-} catch (e) {
+} catch {
   alert("Invalid QR data");
   window.location.href = "./teacher.html";
 }
 
-/* ===============================
+/* ================================
    3. QR EXPIRY (10 MIN)
 ================================ */
 if (Date.now() - payload.timestamp > 10 * 60 * 1000) {
-  alert("QR expired. Ask teacher to generate a new one.");
+  alert("QR expired. Ask teacher to generate again.");
   window.location.href = "./teacher.html";
 }
 
-/* ===============================
-   4. SESSION MATCH CHECK
+/* ================================
+   4. SESSION MATCH
 ================================ */
-const storedSession = localStorage.getItem("sessionId");
+const sessionId = localStorage.getItem("sessionId");
 const expiry = localStorage.getItem("expiry");
 
-if (payload.session !== storedSession || Date.now() > expiry) {
+if (!sessionId || payload.session !== sessionId || Date.now() > expiry) {
   alert("Attendance session expired");
   window.location.href = "./teacher.html";
 }
 
-/* ===============================
-   5. DUPLICATE PREVENTION
+/* ================================
+   5. LOAD LOCAL DATA
 ================================ */
 let records = JSON.parse(localStorage.getItem("records")) || [];
 let marked = JSON.parse(localStorage.getItem("marked")) || [];
 
-/* ===============================
-   6. FORM SUBMISSION
+/* ================================
+   6. FORM SUBMIT
 ================================ */
 document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -72,8 +71,9 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   const name = document.getElementById("name").value.trim();
   const roll = document.getElementById("roll").value.trim().toUpperCase();
 
+  /* 🔒 DUPLICATE BLOCK */
   if (marked.includes(roll)) {
-    alert("Attendance already marked for this roll number.");
+    alert("Attendance already marked for this roll number");
     return;
   }
 
@@ -84,36 +84,35 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
     session: payload.session
   };
 
+  /* SAVE LOCALLY */
   records.push(entry);
   marked.push(roll);
-
   localStorage.setItem("records", JSON.stringify(records));
   localStorage.setItem("marked", JSON.stringify(marked));
 
-  /* ===============================
-     7. SEND TO GOOGLE SHEET
-  ================================ */
-  fetch("https://script.google.com/macros/s/AKfycbw8bF_CgD9IBmcFYv2L1HiKfopJytp3XyCnScUDEbbgVd2kHGpvs0rgHqshAvw6sJlw/exec", {
+  /* SEND TO GOOGLE SHEET */
+  fetch("https://script.google.com/macros/s/AKfycbyb4brPniLVtmYx-_OLr8tx5mg_CghcuGwEJnAEyCQUOX1zChGSHtB8kKm4lb1LqRh5/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entry)
   })
   .then(res => res.text())
-  .then(() => {
-    alert("Attendance marked successfully!");
+  .then(msg => {
+    console.log("Sheet response:", msg);
+    alert("Attendance marked successfully");
     document.getElementById("attendanceForm").reset();
   })
   .catch(err => {
-    console.error(err);
+    console.error("Sheet error:", err);
     alert("Saved locally but failed to send to Google Sheet");
   });
 });
 </script>
 
-</script>
 
 </body>
 </html>
+
 
 
 
