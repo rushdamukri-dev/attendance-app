@@ -1,23 +1,59 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Attendance Summary</title>
+  <meta charset="utf-8">
+  <title>Attendance Summary</title>
 </head>
-<body> 
-  <button onclick="exportCSV()">Export Attendance (CSV)</button>
+<body>
+
+<h2>Attendance Summary</h2>
+
+<button onclick="exportCSV()">Export Attendance (CSV)</button>
 <hr>
 
-<h2>Attendance Summary (Teacher Only)</h2>
-<div id="list"></div>
-<button onclick="logout()">End Session</button>
+<table border="1" cellpadding="8">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Roll</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody id="data"></tbody>
+</table>
 
-<script> 
+<script>
+/* ===============================
+   SESSION CHECK
+================================ */
+const sessionId = localStorage.getItem("sessionId");
+if (!sessionId) {
+  alert("Access denied.");
+  window.location.href = "./teacher.html";
+}
+
+/* ===============================
+   LOAD DATA
+================================ */
+const records = JSON.parse(localStorage.getItem("records")) || [];
+const tbody = document.getElementById("data");
+
+if (records.length === 0) {
+  tbody.innerHTML = "<tr><td colspan='3'>No attendance marked yet</td></tr>";
+} else {
+  records.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.name}</td><td>${r.roll}</td><td>${r.time}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ===============================
+   EXPORT CSV
+================================ */
 function exportCSV() {
-  const records = JSON.parse(localStorage.getItem("records")) || [];
-
   if (records.length === 0) {
-    alert("No attendance data to export");
+    alert("No data to export");
     return;
   }
 
@@ -35,33 +71,6 @@ function exportCSV() {
   a.click();
 
   URL.revokeObjectURL(url);
-}
-</script>
-
-  const sessionId = localStorage.getItem("sessionId");
-
-if (!sessionId) {
-  alert("Access denied. Teacher session not started.");
-  window.location.href = "./teacher.html";
-}
-
-const records = JSON.parse(localStorage.getItem("records")) || [];
-const list = document.getElementById("list");
-
-if (records.length === 0) {
-  list.innerHTML = "<p>No attendance marked yet.</p>";
-} else {
-  records.forEach(r => {
-    const p = document.createElement("p");
-    p.textContent = `${r.roll} - ${r.name} (${r.time})`;
-    list.appendChild(p);
-  });
-}
-
-function logout() {
-  localStorage.clear();
-  alert("Session ended");
-  window.location.href = "./teacher.html";
 }
 </script>
 
