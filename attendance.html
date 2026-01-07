@@ -21,6 +21,13 @@
 
   <button type="submit">Mark Attendance</button>
 </form>
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+if (!token) {
+  alert("Invalid access. Please scan QR.");
+  window.location.href = "./teacher.html";
+}
 
 <script>
 /* =========================
@@ -72,4 +79,5 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   const roll = document.getElementById("roll").value.trim().toUpperCase();
 
   i
+
 
