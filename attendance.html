@@ -87,7 +87,8 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
 
   localStorage.setItem("records", JSON.stringify(records));
   localStorage.setItem("marked", JSON.stringify(marked));
-  fetch("PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE", {
+  
+  fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz-eX3CNFIVbLXyW6FcEHwTaTlkNrC9hYPN0YgG2XL7mBdTjhMG1BOgw7hROKMksyCy/exec"), {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -104,4 +105,5 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
 
 </body>
 </html>
+
 
