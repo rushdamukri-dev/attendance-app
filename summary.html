@@ -28,23 +28,23 @@
 ================================ */
 const sessionId = localStorage.getItem("sessionId");
 if (!sessionId) {
-  alert("Access denied.");
+  alert("Access denied. Teacher session not started.");
   window.location.href = "./teacher.html";
 }
 
 /* ===============================
-   LOAD DATA
+   LOAD RECORDS
 ================================ */
 const records = JSON.parse(localStorage.getItem("records")) || [];
-const tbody = document.getElementById("data");
+const list = document.getElementById("list");
 
 if (records.length === 0) {
-  tbody.innerHTML = "<tr><td colspan='3'>No attendance marked yet</td></tr>";
+  list.innerHTML = "<p>No attendance marked yet.</p>";
 } else {
   records.forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${r.name}</td><td>${r.roll}</td><td>${r.time}</td>`;
-    tbody.appendChild(tr);
+    const p = document.createElement("p");
+    p.textContent = `${r.roll} - ${r.name} (${r.time})`;
+    list.appendChild(p);
   });
 }
 
@@ -57,9 +57,9 @@ function exportCSV() {
     return;
   }
 
-  let csv = "Name,Roll,Time\n";
+  let csv = "Roll,Name,Time\n";
   records.forEach(r => {
-    csv += `${r.name},${r.roll},${r.time}\n`;
+    csv += `${r.roll},${r.name},${r.time}\n`;
   });
 
   const blob = new Blob([csv], { type: "text/csv" });
@@ -71,6 +71,15 @@ function exportCSV() {
   a.click();
 
   URL.revokeObjectURL(url);
+}
+
+/* ===============================
+   LOGOUT
+================================ */
+function logout() {
+  localStorage.clear();
+  alert("Session ended");
+  window.location.href = "./teacher.html";
 }
 </script>
 
