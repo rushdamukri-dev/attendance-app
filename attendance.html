@@ -93,7 +93,7 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   /* ===============================
      7. SEND TO GOOGLE SHEET
   ================================ */
-  fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz-eX3CNFIVbLXyW6FcEHwTaTlkNrC9hYPN0YgG2XL7mBdTjhMG1BOgw7hROKMksyCy/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbw8bF_CgD9IBmcFYv2L1HiKfopJytp3XyCnScUDEbbgVd2kHGpvs0rgHqshAvw6sJlw/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entry)
@@ -114,6 +114,7 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
 
 </body>
 </html>
+
 
 
 
