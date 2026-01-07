@@ -87,6 +87,15 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
 
   localStorage.setItem("records", JSON.stringify(records));
   localStorage.setItem("marked", JSON.stringify(marked));
+  fetch("PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name,
+    roll,
+
 
   alert("Attendance marked successfully!");
   document.getElementById("attendanceForm").reset();
@@ -95,3 +104,4 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
 
 </body>
 </html>
+
