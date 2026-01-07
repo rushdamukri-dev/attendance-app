@@ -12,10 +12,17 @@
 <div id="qrcode" style="margin-top:20px;"></div>
 
 <script>
+<script>
 document.getElementById("generate").onclick = () => {
   const token = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  const payload = { session: token, timestamp: Date.now() };
+
+  const payload = {
+    session: token,
+    timestamp: Date.now()
+  };
+
   const encoded = encodeURIComponent(JSON.stringify(payload));
+
   const url =
     "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
     encoded;
@@ -23,14 +30,19 @@ document.getElementById("generate").onclick = () => {
   const box = document.getElementById("qrcode");
   box.innerHTML = "";
 
-  QRCode.toCanvas(url, { width: 220 }, (_, canvas) => {
+  QRCode.toCanvas(url, { width: 220 }, (err, canvas) => {
+    if (err) {
+      alert("QR generation failed");
+      console.error(err);
+      return;
+    }
+
     box.appendChild(canvas);
 
     const p = document.createElement("p");
     p.style.wordBreak = "break-all";
     p.style.fontSize = "12px";
     p.innerText = url;
-
     box.appendChild(p);
   });
 };
