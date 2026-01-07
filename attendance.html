@@ -15,6 +15,7 @@
 </form>
 
 <script>
+<script>
 /* ===============================
    1. QR TOKEN VALIDATION
 ================================ */
@@ -38,7 +39,7 @@ try {
 }
 
 /* ===============================
-   3. QR TIME EXPIRY (10 MIN)
+   3. QR EXPIRY (10 MIN)
 ================================ */
 if (Date.now() - payload.timestamp > 10 * 60 * 1000) {
   alert("QR expired. Ask teacher to generate a new one.");
@@ -51,7 +52,7 @@ if (Date.now() - payload.timestamp > 10 * 60 * 1000) {
 const storedSession = localStorage.getItem("sessionId");
 const expiry = localStorage.getItem("expiry");
 
-if (!storedSession || payload.session !== storedSession || Date.now() > expiry) {
+if (payload.session !== storedSession || Date.now() > expiry) {
   alert("Attendance session expired");
   window.location.href = "./teacher.html";
 }
@@ -76,44 +77,44 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
     return;
   }
 
- const entry = {
-  name,
-  roll,
-  time: new Date().toLocaleString(),
-  session: payload.session
-};
+  const entry = {
+    name: name,
+    roll: roll,
+    time: new Date().toLocaleString(),
+    session: payload.session
+  };
 
-records.push(entry);
-marked.push(roll);
+  records.push(entry);
+  marked.push(roll);
 
-localStorage.setItem("records", JSON.stringify(records));
-localStorage.setItem("marked", JSON.stringify(marked));
+  localStorage.setItem("records", JSON.stringify(records));
+  localStorage.setItem("marked", JSON.stringify(marked));
 
-/* ✅ ADD THIS PART (VERY IMPORTANT) */
-fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz-eX3CNFIVbLXyW6FcEHwTaTlkNrC9hYPN0YgG2XL7mBdTjhMG1BOgw7hROKMksyCy/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(entry)
-})
-.then(res => res.text())
-.then(data => {
-  console.log("Google Sheet:", data);
-  alert("Attendance marked successfully!");
-})
-.catch(err => {
-  console.error("Sheet error:", err);
-  alert("Attendance saved locally but NOT sent to sheet");
+  /* ===============================
+     7. SEND TO GOOGLE SHEET
+  ================================ */
+  fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz-eX3CNFIVbLXyW6FcEHwTaTlkNrC9hYPN0YgG2XL7mBdTjhMG1BOgw7hROKMksyCy/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry)
+  })
+  .then(res => res.text())
+  .then(() => {
+    alert("Attendance marked successfully!");
+    document.getElementById("attendanceForm").reset();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Saved locally but failed to send to Google Sheet");
+  });
 });
-
-/* optional redirect */
-// window.location.href = "./summary.html";
+</script>
 
 </script>
 
 </body>
 </html>
+
 
 
 
