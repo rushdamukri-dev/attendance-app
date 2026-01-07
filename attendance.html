@@ -76,34 +76,44 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
     return;
   }
 
-  const entry = {
-    name,
-    roll,
-    time: new Date().toLocaleTimeString()
-  };
+ const entry = {
+  name,
+  roll,
+  time: new Date().toLocaleString(),
+  session: payload.session
+};
 
-  records.push(entry);
-  marked.push(roll);
+records.push(entry);
+marked.push(roll);
 
-  localStorage.setItem("records", JSON.stringify(records));
-  localStorage.setItem("marked", JSON.stringify(marked));
-  
-  fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz-eX3CNFIVbLXyW6FcEHwTaTlkNrC9hYPN0YgG2XL7mBdTjhMG1BOgw7hROKMksyCy/exec"), {
+localStorage.setItem("records", JSON.stringify(records));
+localStorage.setItem("marked", JSON.stringify(marked));
+
+/* ✅ ADD THIS PART (VERY IMPORTANT) */
+fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz-eX3CNFIVbLXyW6FcEHwTaTlkNrC9hYPN0YgG2XL7mBdTjhMG1BOgw7hROKMksyCy/exec", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
   },
-  body: JSON.stringify({
-    name,
-    roll,
-
-
+  body: JSON.stringify(entry)
+})
+.then(res => res.text())
+.then(data => {
+  console.log("Google Sheet:", data);
   alert("Attendance marked successfully!");
-  document.getElementById("attendanceForm").reset();
+})
+.catch(err => {
+  console.error("Sheet error:", err);
+  alert("Attendance saved locally but NOT sent to sheet");
 });
+
+/* optional redirect */
+// window.location.href = "./summary.html";
+
 </script>
 
 </body>
 </html>
+
 
 
