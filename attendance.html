@@ -28,6 +28,11 @@ if (!token) {
   alert("Invalid access. Please scan QR.");
   window.location.href = "./teacher.html";
 }
+// STEP 3C — QR TIME EXPIRY CHECK
+if (Date.now() - payload.timestamp > 10 * 60 * 1000) {
+  alert("QR expired. Ask teacher to generate a new one.");
+  window.location.href = "./teacher.html";
+}
 
 <script>
 /* =========================
@@ -79,5 +84,6 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   const roll = document.getElementById("roll").value.trim().toUpperCase();
 
   i
+
 
 
