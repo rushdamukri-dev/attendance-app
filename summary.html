@@ -4,13 +4,40 @@
 <meta charset="utf-8">
 <title>Attendance Summary</title>
 </head>
-<body>
+<body> 
+  <button onclick="exportCSV()">Export Attendance (CSV)</button>
+<hr>
 
 <h2>Attendance Summary (Teacher Only)</h2>
 <div id="list"></div>
 <button onclick="logout()">End Session</button>
 
-<script>
+<script> 
+function exportCSV() {
+  const records = JSON.parse(localStorage.getItem("records")) || [];
+
+  if (records.length === 0) {
+    alert("No attendance data to export");
+    return;
+  }
+
+  let csv = "Name,Roll,Time\n";
+  records.forEach(r => {
+    csv += `${r.name},${r.roll},${r.time}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "attendance.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+</script>
+
   const sessionId = localStorage.getItem("sessionId");
 
 if (!sessionId) {
