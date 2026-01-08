@@ -1,63 +1,24 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8">
-<title>Generate Attendance QR</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <title>Teacher Panel</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+  <h2>Teacher Panel</h2>
 
-<h2>Teacher: Generate Attendance QR</h2>
-<button id="generate">New QR for This Class</button>
-<div id="qrcode" style="margin-top:20px;"></div>
+  <button onclick="generateQR()">Generate QR</button>
+  <br><br>
 
-<script>
-document.getElementById("generate").onclick = () => {
-  const token = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+  <div id="qrcode"></div>
 
-localStorage.setItem("sessionId", token);
-localStorage.setItem("expiry", expiry);
+  <script>
+    function generateQR() {
+      document.getElementById("qrcode").innerHTML = "";
 
+      const sessionId = Date.now().toString();
+      localStorage.setItem("sessionId", sessionId);
 
- const sessionId = Date.now().toString(36);
-const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+      const url = "https://rushdamukri-dev.github.io/attendance-app/attendance.html?session=" + sessionId;
 
-localStorage.setItem("sessionId", sessionId);
-localStorage.setItem("expiry", expiry);
-
-const payload = {
-  session: sessionId,
-  timestamp: Date.now()
-};
-
-
-  const encoded = encodeURIComponent(JSON.stringify(payload));
-
-  const url =
-    "https://rushdamukri-dev.github.io/attendance-app/attendance.html?token=" +
-    encoded;
-
-  const box = document.getElementById("qrcode");
-  box.innerHTML = "";
-
-  QRCode.toCanvas(url, { width: 220 }, (err, canvas) => {
-    if (err) {
-      alert("QR generation failed");
-      console.error(err);
-      return;
-    }
-
-    box.appendChild(canvas);
-
-    const p = document.createElement("p");
-    p.style.wordBreak = "break-all";
-    p.style.fontSize = "12px";
-    p.innerText = url;
-    box.appendChild(p);
-  });
-};
-</script>
-
-</body>
-</html>
+      new QRCode(document.getElementById("qrcode"), {
