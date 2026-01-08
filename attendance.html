@@ -91,7 +91,7 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
   localStorage.setItem("marked", JSON.stringify(marked));
 
   /* SEND TO GOOGLE SHEET */
-  fetch("https://script.google.com/macros/s/AKfycbyb4brPniLVtmYx-_OLr8tx5mg_CghcuGwEJnAEyCQUOX1zChGSHtB8kKm4lb1LqRh5/exec", {
+  fetch("https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbzOvCWANWk9U7oDntJ2qgnXt6huhJgTLl49bme0Yzfeg8ITGeMSF6v76I_liE-ZbByp/exec", {
   method: "POST",
   mode: "no-cors",
   headers: {
@@ -107,6 +107,7 @@ alert("Attendance marked successfully!");
 
 </body>
 </html>
+
 
 
 
