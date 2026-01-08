@@ -1,119 +1,66 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>Mark Attendance</title>
+  <title>Attendance</title>
 </head>
 <body>
 
-<h2>Mark Attendance</h2>
+<h2>Student Attendance</h2>
 
-<form id="attendanceForm">
-  <input type="text" id="name" placeholder="Enter Name" required><br><br>
-  <input type="text" id="roll" placeholder="Enter Roll No" required><br><br>
-  <button type="submit">Submit Attendance</button>
+<form id="form">
+  <input id="name" placeholder="Name" required><br><br>
+  <input id="roll" placeholder="Roll No" required><br><br>
+  <button type="submit">Submit</button>
 </form>
 
+<p id="msg"></p>
+
 <script>
-/* ================================
-   1. QR TOKEN VALIDATION
-================================ */
 const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
+const session = params.get("session");
 
-if (!token) {
-  alert("Invalid access. Please scan QR.");
-  window.location.href = "./teacher.html";
+if (!session) {
+  alert("Invalid access");
+  location.href = "./teacher.html";
 }
 
-/* ================================
-   2. DECODE QR PAYLOAD
-================================ */
-let payload;
-try {
-  payload = JSON.parse(decodeURIComponent(token));
-} catch {
-  alert("Invalid QR data");
-  window.location.href = "./teacher.html";
-}
+const usedRolls = JSON.parse(localStorage.getItem("usedRolls") || "[]");
 
-/* ================================
-   3. QR EXPIRY (10 MIN)
-================================ */
-if (Date.now() - payload.timestamp > 10 * 60 * 1000) {
-  alert("QR expired. Ask teacher to generate again.");
-  window.location.href = "./teacher.html";
-}
-
-/* ================================
-   4. SESSION MATCH
-================================ */
-const sessionId = localStorage.getItem("sessionId");
-const expiry = localStorage.getItem("expiry");
-
-if (!sessionId || payload.session !== sessionId || Date.now() > expiry) {
-  alert("Attendance session expired");
-  window.location.href = "./teacher.html";
-}
-
-/* ================================
-   5. LOAD LOCAL DATA
-================================ */
-let records = JSON.parse(localStorage.getItem("records")) || [];
-let marked = JSON.parse(localStorage.getItem("marked")) || [];
-
-/* ================================
-   6. FORM SUBMIT
-================================ */
-document.getElementById("attendanceForm").addEventListener("submit", (e) => {
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("name").value.trim();
-  const roll = document.getElementById("roll").value.trim().toUpperCase();
+  const name = name.value.trim();
+  const roll = roll.value.trim();
 
-  /* 🔒 DUPLICATE BLOCK */
-  if (marked.includes(roll)) {
-    alert("Attendance already marked for this roll number");
+  if (usedRolls.includes(roll)) {
+    alert("Roll number already marked on this device");
     return;
   }
 
+  usedRolls.push(roll);
+  localStorage.setItem("usedRolls", JSON.stringify(usedRolls));
+
   const entry = {
-    name: name,
-    roll: roll,
+    name,
+    roll,
     time: new Date().toLocaleString(),
-    session: payload.session
+    session
   };
 
-  /* SAVE LOCALLY */
-  records.push(entry);
-  marked.push(roll);
-  localStorage.setItem("records", JSON.stringify(records));
-  localStorage.setItem("marked", JSON.stringify(marked));
+  try {
+    await fetch("YOUR_APPS_SCRIPT_URL_HERE", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry)
+    });
 
-  /* SEND TO GOOGLE SHEET */
- const SCRIPT_URL = "https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbz0CWAMN6KJ0Z0ntJ2gqnx6thuJhT149bme0YzFeg8ITGeM5F6V76I_lie-Zbypy/exec";
+    msg.innerText = "Attendance submitted";
 
-fetch(SCRIPT_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(entry)
-});
-
+  } catch {
+    msg.innerText = "Saved locally but failed to send to Google Sheet";
+  }
+};
 </script>
-
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
