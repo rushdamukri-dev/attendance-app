@@ -92,26 +92,23 @@ document.getElementById("attendanceForm").addEventListener("submit", (e) => {
 
   /* SEND TO GOOGLE SHEET */
   fetch("https://script.google.com/macros/s/AKfycbyb4brPniLVtmYx-_OLr8tx5mg_CghcuGwEJnAEyCQUOX1zChGSHtB8kKm4lb1LqRh5/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(entry)
-  })
-  .then(res => res.text())
-  .then(msg => {
-    console.log("Sheet response:", msg);
-    alert("Attendance marked successfully");
-    document.getElementById("attendanceForm").reset();
-  })
-  .catch(err => {
-    console.error("Sheet error:", err);
-    alert("Saved locally but failed to send to Google Sheet");
-  });
+  fetch("https://script.google.com/macros/s/AKfycbyb4brPniLVtmYx-_OLr8tx5mg_CghcuGwEJnAEyCQUOX1zChGSHtB8kKm4lb1LqRh5/exec", {
+  method: "POST",
+  mode: "no-cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(entry)
 });
+
+alert("Attendance marked successfully!");
+
 </script>
 
 
 </body>
 </html>
+
 
 
 
