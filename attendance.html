@@ -47,21 +47,18 @@ document.getElementById("form").onsubmit = async (e) => {
     session
   };
 
-  try {
-    await fetch("https://script.google.com/macros/s/AKfycbwSu_jch9dVqEbbnGxZy3fqDsnzCzQMiqYcqL3_2bLbmKUxqmJTu80O1F20IO7aPRmr/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(entry)
-    });
-
-    msg.innerText = "Attendance submitted";
-
-  } catch {
-    msg.innerText = "Saved locally but failed to send to Google Sheet";
+ await fetch(
+  "https://script.google.com/macros/s/AKfycbwSu_jch9dVqEbbnGxZy3fqDsnzCzQMiqYcqL3_2bLbmKUxqmJTu80O1F20IO7aPRmr/exec",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry)
   }
-};
+);
+
 </script>
 
 </body>
 </html>
+
 
