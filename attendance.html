@@ -48,7 +48,7 @@ document.getElementById("form").onsubmit = async (e) => {
   };
 
   try {
-    await fetch("YOUR_APPS_SCRIPT_URL_HERE", {
+    await fetch("https://script.google.com/macros/s/AKfycbwSu_jch9dVqEbbnGxZy3fqDsnzCzQMiqYcqL3_2bLbmKUxqmJTu80O1F20IO7aPRmr/exec", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry)
@@ -64,3 +64,4 @@ document.getElementById("form").onsubmit = async (e) => {
 
 </body>
 </html>
+
