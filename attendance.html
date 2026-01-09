@@ -55,7 +55,8 @@ document.getElementById("submitBtn").onclick = async function () {
 
   try {
     await fetch(
-      "https://script.google.com/macros/s/AKfycbwSu_jch9dVqEbbnGxZy3fqDsnzCzQMiqYcqL3_2bLbmKUxqmJTu80O1F20IO7aPRmr/exec",
+      "const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyc7MsHrcUgXBcp8NdTZCEpXsf1RKGcKVwMv8fWblZYWWGP63ZmTT5pIspMkaZymp4e/exec";
+",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
