@@ -28,14 +28,18 @@ if (!session) {
 
 const usedRolls = JSON.parse(localStorage.getItem("usedRolls") || "[]");
 
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+document.getElementById("submitBtn").onclick = async function () {
+  const name = document.getElementById("name").value.trim();
+  const roll = document.getElementById("roll").value.trim();
+  const msg = document.getElementById("msg");
 
-  const name = name.value.trim();
-  const roll = roll.value.trim();
+  if (!name || !roll) {
+    alert("Fill all fields");
+    return;
+  }
 
   if (usedRolls.includes(roll)) {
-    alert("Roll number already marked on this device");
+    alert("Roll already marked on this device");
     return;
   }
 
@@ -49,19 +53,27 @@ document.getElementById("form").onsubmit = async (e) => {
     session
   };
 
- await fetch(
-  "https://script.google.com/macros/s/AKfycbwSu_jch9dVqEbbnGxZy3fqDsnzCzQMiqYcqL3_2bLbmKUxqmJTu80O1F20IO7aPRmr/exec",
-  {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(entry)
-  }
-);
+  try {
+    await fetch(
+      "https://script.google.com/macros/s/AKfycbwSu_jch9dVqEbbnGxZy3fqDsnzCzQMiqYcqL3_2bLbmKUxqmJTu80O1F20IO7aPRmr/exec",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry)
+      }
+    );
 
+    msg.innerText = "Attendance submitted";
+
+  } catch (e) {
+    msg.innerText = "Saved locally but failed to send to Google Sheet";
+  }
+};
 </script>
 
 </body>
 </html>
+
 
 
 
