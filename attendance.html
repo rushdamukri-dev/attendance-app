@@ -1,81 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Attendance</title>
-</head>
 <body>
+<h2>Mark Attendance</h2>
 
-<h2>Student Attendance</h2>
-
-<form id="form" onsubmit="return false;">
-
-  <input id="name" placeholder="Name" required><br><br>
+<form id="f">
   <input id="roll" placeholder="Roll No" required><br><br>
-<button type="button" id="submitBtn">Submit</button>
-
+  <input id="name" placeholder="Name" required><br><br>
+  <button>Submit</button>
 </form>
 
-<p id="msg"></p>
-
 <script>
-const params = new URLSearchParams(window.location.search);
-const session = params.get("session");
+const SCRIPT_URL = "https://script.googleusercontent.com/a/macros/aiarkp.ac.in/echo?user_content_key=AehSKLh6Z7i0qcMvnC_B8zderTWsIJDECHEkW-F88LHHZnYXqtkuy_TRffrmUfH73JD0kzQo1KiSIotYFoPzlSwmian4Gb3P-JgZRAGvgPh2DG4Bjjbw0gWOYwjaHQP9djjdGWaWVTP0TCK-e5vrWrdrHTjrwfxPkmRjocbcty4dY_tCrmNzjA6KExfLPlAovLePjsqMoTyrUwi6pD69cfRcXx94pqZRiQcPHFUXcUkCzUCBvA-LWeMGiCZshICGzi09t82sw57r_7RfjkPDi0FDp3Gfq9Qo8_FHBSH4meGUZ6mSoa-h6gs&lib=M9RHkxu5TEcaU6s2NLz1FBdCR0-6s62-w;
 
-if (!session) {
-  alert("Invalid access");
-  location.href = "./teacher.html";
-}
-
-const usedRolls = JSON.parse(localStorage.getItem("usedRolls") || "[]");
-
-document.getElementById("submitBtn").onclick = async function () {
-  const name = document.getElementById("name").value.trim();
-  const roll = document.getElementById("roll").value.trim();
-  const msg = document.getElementById("msg");
-
-  if (!name || !roll) {
-    alert("Fill all fields");
-    return;
-  }
-
-  if (usedRolls.includes(roll)) {
-    alert("Roll already marked on this device");
-    return;
-  }
-
-  usedRolls.push(roll);
-  localStorage.setItem("usedRolls", JSON.stringify(usedRolls));
+document.getElementById("f").onsubmit = e => {
+  e.preventDefault();
 
   const entry = {
-    name,
-    roll,
-    time: new Date().toLocaleString(),
-    session
+    roll: roll.value,
+    name: name.value,
+    session: "TEST"
   };
 
-  try {
-    await fetch(
-      "const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyc7MsHrcUgXBcp8NdTZCEpXsf1RKGcKVwMv8fWblZYWWGP63ZmTT5pIspMkaZymp4e/exec";
-",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(entry)
-      }
-    );
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(entry)
+  });
 
-    msg.innerText = "Attendance submitted";
-
-  } catch (e) {
-    msg.innerText = "Saved locally but failed to send to Google Sheet";
-  }
+  alert("Submitted");
 };
 </script>
-
 </body>
 </html>
-
-
-
-
-
