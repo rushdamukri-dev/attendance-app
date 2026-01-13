@@ -1,33 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-  <title>Teacher Panel</title>
+  <title>Teacher – Generate QR</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
-
-  <h2>Teacher Panel</h2>
+  <h2>Generate Attendance QR</h2>
   <button onclick="generateQR()">Generate QR</button>
+  <div id="qr"></div>
 
-  <br><br>
-  <img id="qr" style="display:none; border:1px solid #000"/>
+<script>
+function generateQR() {
+  const sessionId = Date.now().toString();
+  const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-  <script>
-    function generateQR() {
-      const sessionId = Date.now().toString();
-      localStorage.setItem("sessionId", sessionId);
+  localStorage.setItem("sessionId", sessionId);
+  localStorage.setItem("expiry", expiry);
+  localStorage.setItem("records", JSON.stringify([]));
 
-      const attendanceUrl =
-        "https://rushdamukri-dev.github.io/attendance-app/attendance.html?session=" +
-        sessionId;
+  const payload = encodeURIComponent(JSON.stringify({ sessionId, expiry }));
+  const url = `attendance.html?data=${payload}`;
 
-      const qrImg = document.getElementById("qr");
-      qrImg.src =
-        "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
-        encodeURIComponent(attendanceUrl);
-
-      qrImg.style.display = "block";
-    }
-  </script>
-
+  document.getElementById("qr").innerHTML = "";
+  QRCode.toCanvas(url, { width: 220 }, (_, c) =>
+    document.getElementById("qr").appendChild(c)
+  );
+}
+</script>
 </body>
 </html>
