@@ -1,40 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+<head>
+  <title>Attendance</title>
+</head>
 <body>
-<h2>Mark Attendance</h2>
+  <h2>Mark Attendance</h2>
 
-<form id="f">
-  <input id="roll" placeholder="Roll No" required><br><br>
-  <input id="name" placeholder="Name" required><br><br>
-  <button>Submit</button>
-</form>
+  <form id="form">
+    <input id="roll" placeholder="Roll No" required><br><br>
+    <input id="name" placeholder="Name" required><br><br>
+    <button type="submit">Submit</button>
+  </form>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/a/macros/aiarkp.ac.in/s/AKfycbyTahgc-DpFbHAhiOSceY9xG-OodbTbNit8fp4lZAgdLNuxXalbCiHcXZASQj0aG0z0/exec"
+const params = new URLSearchParams(window.location.search);
+const data = params.get("data");
 
-document.getElementById("f").onsubmit = e => {
+if (!data) {
+  alert("Invalid access. Scan QR.");
+  location.href = "teacher.html";
+}
+
+const payload = JSON.parse(decodeURIComponent(data));
+
+if (Date.now() > payload.expiry) {
+  alert("QR expired");
+  location.href = "teacher.html";
+}
+
+document.getElementById("form").onsubmit = e => {
   e.preventDefault();
 
-  const entry = {
-    roll: roll.value,
-    name: name.value,
-    session: "TEST"
-  };
+  const roll = roll.value.trim();
+  const name = name.value.trim();
 
- fetch("https://script.google.com/macros/s/AKfycbzQDEEGA0bOPdhVhkgojp_APB7Nc__yetB9wzjSmiZub8-a3ofPtFBDJe71JSVPDMem/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(entry)
-});
+  let records = JSON.parse(localStorage.getItem("records")) || [];
 
-    method: "POST",
-    body: JSON.stringify(entry)
+  if (records.some(r => r.roll === roll)) {
+    alert("Roll already marked");
+    return;
+  }
+
+  records.push({
+    roll,
+    name,
+    time: new Date().toLocaleString()
   });
 
-  alert("Submitted");
+  localStorage.setItem("records", JSON.stringify(records));
+  alert("Attendance marked successfully");
+  e.target.reset();
 };
 </script>
 </body>
 </html>
-
-
