@@ -1,31 +1,44 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>Teacher – Generate QR</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<meta charset="utf-8">
+<title>Teacher – Generate QR</title>
+
+<!-- QR Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
 </head>
 <body>
-  <h2>Generate Attendance QR</h2>
-  <button onclick="generateQR()">Generate QR</button>
-  <div id="qr"></div>
+
+<h2>Generate Attendance QR</h2>
+<button id="btn">Generate QR</button>
+<div id="qr" style="margin-top:20px;"></div>
 
 <script>
-function generateQR() {
+document.getElementById("btn").onclick = function () {
+
   const sessionId = Date.now().toString();
-  const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+  const expiry = Date.now() + 10 * 60 * 1000;
 
   localStorage.setItem("sessionId", sessionId);
   localStorage.setItem("expiry", expiry);
   localStorage.setItem("records", JSON.stringify([]));
 
   const payload = encodeURIComponent(JSON.stringify({ sessionId, expiry }));
-  const url = `attendance.html?data=${payload}`;
+  const url = "attendance.html?data=" + payload;
 
   document.getElementById("qr").innerHTML = "";
-  QRCode.toCanvas(url, { width: 220 }, (_, c) =>
-    document.getElementById("qr").appendChild(c)
-  );
-}
+
+  QRCode.toCanvas(url, { width: 220 }, function (err, canvas) {
+    if (err) {
+      alert("QR error: " + err);
+      return;
+    }
+    document.getElementById("qr").appendChild(canvas);
+  });
+};
 </script>
+
 </body>
 </html>
+s
