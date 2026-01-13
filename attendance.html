@@ -21,7 +21,12 @@ document.getElementById("f").onsubmit = e => {
     session: "TEST"
   };
 
-  fetch(SCRIPT_URL, {
+ fetch("https://script.google.com/macros/s/AKfycbzQDEEGA0bOPdhVhkgojp_APB7Nc__yetB9wzjSmiZub8-a3ofPtFBDJe71JSVPDMem/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(entry)
+});
+
     method: "POST",
     body: JSON.stringify(entry)
   });
@@ -31,4 +36,5 @@ document.getElementById("f").onsubmit = e => {
 </script>
 </body>
 </html>
+
 
