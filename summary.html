@@ -1,91 +1,38 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>Attendance Summary</title>
+  <title>Summary</title>
 </head>
 <body>
-
-<h2>Attendance Summary</h2>
-
-<button onclick="exportCSV()">Export Attendance (CSV)</button> 
-
-  <div id=list"></div>
-  
-    
-<hr>
-
-<table border="1" cellpadding="8">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Roll</th>
-      <th>Time</th>
-    </tr>
-  </thead>
-  <tbody id="data"></tbody>
-</table>
+  <h2>Attendance Summary</h2>
+  <div id="list"></div>
+  <br>
+  <button onclick="downloadCSV()">Download CSV</button>
 
 <script>
-/* ===============================
-   SESSION CHECK
-================================ */
-const sessionId = localStorage.getItem("sessionId");
-if (!sessionId) {
-  alert("Access denied. Teacher session not started.");
-  window.location.href = "./teacher.html";
-}
-
-/* ===============================
-   LOAD RECORDS
-================================ */
 const records = JSON.parse(localStorage.getItem("records")) || [];
 const list = document.getElementById("list");
 
 if (records.length === 0) {
-  list.innerHTML = "<p>No attendance marked yet.</p>";
+  list.innerHTML = "<p>No attendance marked</p>";
 } else {
   records.forEach(r => {
-    const p = document.createElement("p");
-    p.textContent = `${r.roll} - ${r.name} (${r.time})`;
-    list.appendChild(p);
+    list.innerHTML += `<p>${r.roll} - ${r.name} (${r.time})</p>`;
   });
 }
 
-/* ===============================
-   EXPORT CSV
-================================ */
-function exportCSV() {
-  if (records.length === 0) {
-    alert("No data to export");
-    return;
-  }
-
+function downloadCSV() {
   let csv = "Roll,Name,Time\n";
   records.forEach(r => {
     csv += `${r.roll},${r.name},${r.time}\n`;
   });
 
   const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = "attendance.csv";
   a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-/* ===============================
-   LOGOUT
-================================ */
-function logout() {
-  localStorage.clear();
-  alert("Session ended");
-  window.location.href = "./teacher.html";
 }
 </script>
-
 </body>
 </html>
