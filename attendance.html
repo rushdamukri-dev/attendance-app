@@ -1,38 +1,61 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>Attendance</title>
+<meta charset="utf-8">
+<title>Attendance</title>
 </head>
 <body>
-  <h2>Mark Attendance</h2>
 
-  <form id="form">
-    <input id="roll" placeholder="Roll No" required><br><br>
-    <input id="name" placeholder="Name" required><br><br>
-    <button type="submit">Submit</button>
-  </form>
+<h2>Mark Attendance</h2>
+
+<div id="status"></div>
+
+<form id="form">
+  <input id="roll" placeholder="Roll Number" required><br><br>
+  <input id="name" placeholder="Name" required><br><br>
+  <button type="submit">Submit</button>
+</form>
 
 <script>
+const statusDiv = document.getElementById("status");
+
+// 1️⃣ Read QR data
 const params = new URLSearchParams(window.location.search);
 const data = params.get("data");
 
 if (!data) {
-  alert("Invalid access. Scan QR.");
-  location.href = "teacher.html";
+  statusDiv.innerHTML = "<p style='color:red'>❌ No QR data found</p>";
+  throw new Error("No QR data");
 }
 
-const payload = JSON.parse(decodeURIComponent(data));
+// 2️⃣ Decode QR payload
+let payload;
+try {
+  payload = JSON.parse(decodeURIComponent(data));
+} catch (e) {
+  statusDiv.innerHTML = "<p style='color:red'>❌ Invalid QR data</p>";
+  throw e;
+}
 
+// 3️⃣ Check expiry
 if (Date.now() > payload.expiry) {
-  alert("QR expired");
-  location.href = "teacher.html";
+  statusDiv.innerHTML = "<p style='color:red'>❌ QR expired</p>";
+  throw new Error("QR expired");
 }
 
-document.getElementById("form").onsubmit = e => {
+statusDiv.innerHTML = "<p style='color:green'>✅ QR verified</p>";
+
+// 4️⃣ Submit attendance
+document.getElementById("form").onsubmit = function (e) {
   e.preventDefault();
 
-  const roll = roll.value.trim();
-  const name = name.value.trim();
+  const roll = document.getElementById("roll").value.trim();
+  const name = document.getElementById("name").value.trim();
+
+  if (!roll || !name) {
+    alert("Fill all fields");
+    return;
+  }
 
   let records = JSON.parse(localStorage.getItem("records")) || [];
 
@@ -48,9 +71,11 @@ document.getElementById("form").onsubmit = e => {
   });
 
   localStorage.setItem("records", JSON.stringify(records));
+
   alert("Attendance marked successfully");
   e.target.reset();
 };
 </script>
+
 </body>
 </html>
